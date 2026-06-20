@@ -412,29 +412,7 @@ class ModPortHub:
             for ren in render_ports:
                 self.connect(v, ren, bidirectional=True)
 
-        log.info(f"Auto-connected compatible groups: {len(vite_ports)} vite, {len(react_ports)} react, {len(render_ports)} render ports")
-
-
-# Simple File Wrapper (add this class near the top, after imports)
-class FilePortWrapper:
-    """Lightweight wrapper for file-based ports"""
-    def __init__(self, file_path: str):
-        self.file_path = file_path
-        self.name = os.path.basename(file_path)
-
-    def read(self) -> str:
-        """Read file content"""
-        try:
-            with open(self.file_path, 'r', encoding='utf-8') as f:
-                return f.read()
-        except Exception as e:
-            log.error(f"Failed to read {self.file_path}: {e}")
-            return ""
-
-    def __repr__(self):
-        return f"FilePort({self.name})"
-
-    # You can extend this with more methods (write, process, etc.) 
+        log.info(f"Auto-connected compatible groups: {len(vite_ports)} vite, {len(react_ports)} react, {len(render_ports)} render ports") 
 
 # ====================== GLOBAL INSTANCE ======================
 PortHub = ModPortHub()
