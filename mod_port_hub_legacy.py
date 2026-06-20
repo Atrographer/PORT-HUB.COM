@@ -173,36 +173,6 @@ class FilePortWrapper:
         log.info(f"Auto-discovery completed. Found {discovered} new ports.")
         return discovered
 
-    def auto_hub_files(self, root_dir: str = ".", extensions: Optional[List[str]] = None):
-        if extensions is None:
-            extensions = [
-                ".py", ".jsx", ".tsx", ".vue", ".svelte",
-                ".js", ".ts", ".html", ".json",
-                "vite.config.*"
-            ]
-
-        discovered = 0
-        root = Path(root_dir).resolve()
-
-        for ext in extensions:
-            pattern = str(root / "**" / f"*{ext}" if "*" not in ext else f"**/{ext}")
-            for file_path in glob.glob(pattern, recursive=True):
-                if any(ignore in file_path for ignore in ["node_modules", "__pycache__", ".git", "dist", "build"]):
-                    continue
-
-                rel_path = os.path.relpath(file_path, root)
-                port_name = rel_path.replace(os.sep, "-").replace(".", "-").lower()
-
-                port_type_id = self._infer_port_type_from_file(file_path)
-
-                file_port = FilePortWrapper(file_path)
-                self.register_port(port_name, file_port, port_type_id)
-                discovered += 1
-
-        self._auto_connect_compatible()
-        log.info(f"File auto-hub completed. Hubb'ed {discovered} files from {root_dir}")
-        return discovered
-
     # ====================== UTILITIES ======================
     def list_ports(self) -> List[str]:
         return list(self.ports.keys())
@@ -257,37 +227,6 @@ class FilePortWrapper:
 
         log.info(f" File auto-hub completed. Hubb'ed {discovered} files from {root_dir}")
         return discovered
-
-    def _infer_port_type_from_file(self, filepath: str) -> Optional[str]:
-        """Intelligent type inference based on filename and extension"""
-        name = filepath.lower()
-        if "vite.config" in name:
-            return "vite:config"
-        elif any(x in name for x in [".jsx", ".tsx"]):
-            return "react:component"
-        elif "render" in name or "deployment" in name:
-            return "render:service"
-        elif name.endswith(".py") and ("api" in name or "app" in name):
-            return "web:api"
-        elif name.endswith(".html"):
-            return "web:static"
-        elif name.endswith((".js", ".ts")):
-            return "vite:module"
-        return None
-
-    def _auto_connect_compatible(self):
-        """Automatically bridge common stacks (Vite ↔ React ↔ Render)"""
-        vite_ports = [n for n in self.ports if n.startswith("vite")]
-        react_ports = [n for n in self.ports if "react" in n]
-        render_ports = [n for n in self.ports if "render" in n]
-
-        for v in vite_ports:
-            for r in react_ports:
-                self.connect(v, r, bidirectional=True)
-            for ren in render_ports:
-                self.connect(v, ren, bidirectional=True)
-
-        log.info(f"Auto-connected compatible groups: {len(vite_ports)} vite, {len(react_ports)} react, {len(render_ports)} render ports")
 
 # ====================== GLOBAL HUB ======================
 PortHub = ModPortHub()
