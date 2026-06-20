@@ -1,0 +1,145 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{enumitem}
+
+\title{\textbf{PORT-HUB.COM} \\ Universal Adaptive Port Hub}
+\author{Atrographer}
+\date{\today}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\textbf{PORT-HUB.COM} is a lightweight, general-purpose dynamic port/adapter system. It automatically discovers, types, registers, and interconnects components — including **specific project files** (Vite, React, Render.com, Python, HTML, etc.).
+\end{abstract}
+
+\section{Quick Start}
+
+\begin{lstlisting}[language=Python]
+from port_type_hub import PortHub
+
+# Standard module discovery
+PortHub.auto_discover()
+
+# NEW: File-aware auto-hubbing (recommended for projects)
+PortHub.auto_hub_files(".")
+
+PortHub.status()
+\end{lstlisting}
+
+\section{Core Concepts}
+
+\begin{itemize}
+    \item \textbf{Port}: Any object, module, or **file**.
+    \item \textbf{PortType}: Typed metadata (vite:config, react:component, etc.).
+    \item \textbf{Connect}: Dynamic method bridging.
+    \item \textbf{Auto-Discovery}: Modules + **specific files**.
+\end{itemize}
+
+\section{auto\_hub\_files() — File-Aware Auto-Hubbing}
+
+This is the key feature for **production workflows** with Vite + React + Render.
+
+\begin{lstlisting}[language=Python]
+def auto_hub_files(self, root_dir: str = ".", extensions: Optional[List[str]] = None):
+    """Discover and hub specific files as ports"""
+    # Scans .py, .jsx, .tsx, vite.config.*, .html, etc.
+    # Skips node_modules, __pycache__, .git
+    # Auto-assigns types and connects compatible ports
+\end{lstlisting}
+
+\subsection{How It Works}
+\begin{itemize}
+    \item Scans your project directory recursively.
+    \item Registers files as lazy ports with intelligent typing.
+    \item Automatically connects common stacks (Vite ↔ React ↔ Render).
+    \item Works **without reinstalling** packages on every test run.
+\end{itemize}
+
+\subsection{Example Usage}
+
+\begin{lstlisting}[language=Python]
+# In your main app / build script
+from port_type_hub import PortHub
+
+def initialize_hub():
+    PortHub.auto_discover()           # Module-level
+    PortHub.auto_hub_files(".")       # File-level (Vite/React/etc.)
+
+    # Custom ports
+    PortHub.register_port("my_api", fastapi_app, "web:api")
+    
+    return PortHub
+
+if __name__ == "__main__":
+    hub = initialize_hub()
+    hub.status()
+\end{lstlisting}
+
+\subsection{Supported File Types (Default)}
+\begin{itemize}
+    \item \texttt{.py}, \texttt{.jsx}, \texttt{.tsx}, \texttt{.vue}, \texttt{.svelte}
+    \item \texttt{vite.config.*}
+    \item \texttt{.html}, \texttt{.json}, \texttt{.js}, \texttt{.ts}
+\end{itemize}
+
+Auto-type inference examples:
+- `vite.config.ts` → `vite:config`
+- `*.jsx / *.tsx` → `react:component`
+- Files with “render” or “deployment” → `render:service`
+- `.html` → `web:static`
+
+\section{Why It Feels Much Better}
+
+\begin{itemize}
+    \item Persistent file-to-port mapping across runs.
+    \item Zero-config wiring for modern stacks (Vite + React + Render.com).
+    \item Easy to extend with your own specific file patterns.
+    \item Production-grade generality with low overhead.
+\end{itemize}
+
+\section{Files in Repo}
+\begin{itemize}
+    \item \texttt{port\_type\_hub.py} — Main typed hub + \texttt{auto\_hub\_files()}
+    \item \texttt{auto\_hub\_files.py} — Dedicated file hub implementation
+    \item \texttt{mod\_port\_hub.py} — Base version
+    \item \texttt{default\_port\_types.py}
+\end{itemize}
+
+\bigskip
+\textbf{After using Port Hub you will feel much better.}
+
+\end{document}
