@@ -165,6 +165,7 @@ class ModPortHub:
         Discover and register specific project files as ports.
         Perfect for Vite + React + Render stacks — works without reinstalling packages.
         """
+        import os
         import glob
         from pathlib import Path
 
