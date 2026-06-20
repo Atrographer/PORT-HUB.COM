@@ -4,7 +4,7 @@
 1. Zero/low-config for common modern stacks (Vite + React + Render.com deployments).
 2. Persistent file-to-port mapping across runs — no need to reinstall or re-import everything.
 3. Bridges frontend file reality (many small JSX/TSX files) with backend orchestration (Python scripting).
-4. A specialized tool for frontend orchestration from Python.
+4. A specialized tool for frontend orchestration through Python.
 5. Extensible: easy to add custom file patterns or port types.
 6. Build scripts / dev orchestration tools.
 7. Rapid prototyping of component systems.
