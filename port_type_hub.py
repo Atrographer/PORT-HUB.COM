@@ -323,6 +323,103 @@ class ModPortHub:
         print(f"Active Connections   : {len(self.connections)}")
         print(f"Available PortTypes  : {len(PortType.get_all())}")
 
+# ====================== FILE-AWARE AUTO-HUBBING ======================
+    def auto_hub_files(self, root_dir: str = ".", extensions: Optional[List[str]] = None):
+        """
+        Discover and register specific project files as ports.
+        Perfect for Vite + React + Render stacks — works without reinstalling packages.
+        """
+        import os
+        import glob
+        from pathlib import Path
+
+        if extensions is None:
+            extensions = [
+                ".py", ".jsx", ".tsx", ".vue", ".svelte",
+                ".js", ".ts", ".html", ".json",
+                "vite.config.*"
+            ]
+
+        discovered = 0
+        root = Path(root_dir).resolve()
+
+        for ext in extensions:
+            pattern = str(root / "**" / f"*{ext}" if not ext.startswith(".") else f"**/*{ext}")
+            for file_path in glob.glob(pattern, recursive=True):
+                if any(ignore in file_path for ignore in ["node_modules", "__pycache__", ".git", "dist", "build"]):
+                    continue
+
+                rel_path = os.path.relpath(file_path, root)
+                # Create clean port name
+                port_name = rel_path.replace("/", "-").replace("\\", "-").replace(".", "-").lower()
+
+                # Infer port type
+                port_type_id = self._infer_port_type_from_file(file_path)
+
+                # Create a simple file wrapper port
+                file_port = FilePortWrapper(file_path)  # defined below
+
+                self.register_port(port_name, file_port, port_type_id)
+                discovered += 1
+
+        # Auto-connect common compatible groups
+        self._auto_connect_compatible()
+
+        log.info(f" File auto-hub completed. Hubb'ed {discovered} files from {root_dir}")
+        return discovered
+
+    def _infer_port_type_from_file(self, filepath: str) -> Optional[str]:
+        """Intelligent type inference based on filename and extension"""
+        name = filepath.lower()
+        if "vite.config" in name:
+            return "vite:config"
+        elif any(x in name for x in [".jsx", ".tsx"]):
+            return "react:component"
+        elif "render" in name or "deployment" in name:
+            return "render:service"
+        elif name.endswith(".py") and ("api" in name or "app" in name):
+            return "web:api"
+        elif name.endswith(".html"):
+            return "web:static"
+        elif name.endswith((".js", ".ts")):
+            return "vite:module"
+        return None
+
+    def _auto_connect_compatible(self):
+        """Automatically bridge common stacks (Vite ↔ React ↔ Render)"""
+        vite_ports = [n for n in self.ports if n.startswith("vite")]
+        react_ports = [n for n in self.ports if "react" in n]
+        render_ports = [n for n in self.ports if "render" in n]
+
+        for v in vite_ports:
+            for r in react_ports:
+                self.connect(v, r, bidirectional=True)
+            for ren in render_ports:
+                self.connect(v, ren, bidirectional=True)
+
+        log.info(f"Auto-connected compatible groups: {len(vite_ports)} vite, {len(react_ports)} react, {len(render_ports)} render ports")
+
+
+# Simple File Wrapper (add this class near the top, after imports)
+class FilePortWrapper:
+    """Lightweight wrapper for file-based ports"""
+    def __init__(self, file_path: str):
+        self.file_path = file_path
+        self.name = os.path.basename(file_path)
+
+    def read(self) -> str:
+        """Read file content"""
+        try:
+            with open(self.file_path, 'r', encoding='utf-8') as f:
+                return f.read()
+        except Exception as e:
+            log.error(f"Failed to read {self.file_path}: {e}")
+            return ""
+
+    def __repr__(self):
+        return f"FilePort({self.name})"
+
+    # You can extend this with more methods (write, process, etc.) 
 
 # ====================== GLOBAL INSTANCE ======================
 PortHub = ModPortHub()
