@@ -70,7 +70,22 @@ class PortType:
     def __repr__(self) -> str:
         return f"PortType({self.id}, {self.category})"
 
+class FilePortWrapper:
+    def __init__(self, file_path: str):
+        self.file_path = file_path
+        self.name = os.path.basename(file_path)
 
+    def read(self) -> str:
+        try:
+            with open(self.file_path, 'r', encoding='utf-8') as f:
+                return f.read()
+        except Exception as e:
+            log.error(f"Failed to read {self.file_path}: {e}")
+            return ""
+
+    def __repr__(self):
+        return f"FilePort({self.name})" 
+        
 class DefaultPortTypes:
     @staticmethod
     def register_all() -> None:
