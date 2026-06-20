@@ -2,7 +2,7 @@
 mod_port_hub_legacy.py
 Universal Porting Hub — Generalized & Adaptive
 ===============================================
-Original core implementation
+Individual Model - Seperate From port_type_hub.py
 
 Use port_type_hub.py for the recomended advanced version with PortType system.
 """
@@ -203,35 +203,6 @@ class FilePortWrapper:
         log.info(f"File auto-hub completed. Hubb'ed {discovered} files from {root_dir}")
         return discovered
 
-    def _infer_port_type_from_file(self, filepath: str) -> Optional[str]:
-        name = filepath.lower()
-        if "vite.config" in name:
-            return "vite:config"
-        elif any(x in name for x in [".jsx", ".tsx"]):
-            return "react:component"
-        elif "render" in name or "deployment" in name:
-            return "render:service"
-        elif name.endswith(".py") and ("api" in name or "app" in name):
-            return "web:api"
-        elif name.endswith(".html"):
-            return "web:static"
-        elif name.endswith((".js", ".ts")):
-            return "vite:module"
-        return None
-
-    def _auto_connect_compatible(self):
-        vite_ports = [n for n in self.ports if n.startswith("vite")]
-        react_ports = [n for n in self.ports if "react" in n]
-        render_ports = [n for n in self.ports if "render" in n]
-
-        for v in vite_ports:
-            for r in react_ports:
-                self.connect(v, r, bidirectional=True)
-            for ren in render_ports:
-                self.connect(v, ren, bidirectional=True)
-
-        log.info(f"Auto-connected: {len(vite_ports)} vite, {len(react_ports)} react, {len(render_ports)} render ports") 
-        
     # ====================== UTILITIES ======================
     def list_ports(self) -> List[str]:
         return list(self.ports.keys())
