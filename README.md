@@ -8,7 +8,7 @@
 5. Extensible: easy to add custom file patterns or port types.
 6. Build scripts / dev orchestration tools.
 7. Rapid prototyping of component systems.
-8. Meta-tools that need to "port-to-port" a full Vite + React project.
+8. Meta-tools that "port-to-port" a full Vite + React project.
 
 ======================================
 Anyone tired of manual wiring between configs, components, and deployment targets?
