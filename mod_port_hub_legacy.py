@@ -1,6 +1,10 @@
 """
-mod_port_hub.py
+mod_port_hub_legacy.py
 Universal Porting Hub — Generalized & Adaptive
+===============================================
+Original core implementation
+
+Use port_type_hub.py for the recomended advanced version with PortType system.
 """
 
 import os
