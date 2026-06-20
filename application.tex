@@ -1,0 +1,98 @@
+**Git / Project Summary for a Typical Vite + React + Render.com Application (PortHub Context)**
+
+\[
+\begin{array}{c}
+\text{\textbf{Standard Project Structure}} \\[1em]
+\begin{verbatim}
+my-vite-react-app/
+├── index.html                  # Entry HTML (Vite injects script)
+├── package.json
+├── vite.config.js / .ts        # ← Key "vite:config" port
+├── tsconfig.json
+├── postcss.config.js           # (optional, with Tailwind)
+├── tailwind.config.js          # (common)
+├── .env                        # Environment vars
+├── public/
+│   └── vite.svg
+└── src/
+    ├── main.tsx / main.jsx     # React root render
+    ├── App.tsx
+    ├── components/             # ← Many "react:component" ports
+    ├── pages/ or routes/
+    ├── assets/
+    ├── utils/
+    ├── hooks/
+    └── styles/ or index.css
+\end{verbatim}
+\end{array}
+\]
+
+**Key files PortHub targets** (via `auto_hub_files(".")`):
+
+\[
+\text{vite.config.*} \quad \to \quad \text{"vite:config" port}
+\]
+\[
+\text{*.jsx / *.tsx} \quad \to \quad \text{"react:component" ports}
+\]
+\[
+\text{Files mentioning "render", deployment scripts} \quad \to \quad \text{"render:service" ports}
+\]
+
+**Typical `package.json` Scripts**
+
+\[
+\begin{verbatim}
+{
+  "scripts": {
+    "dev": "vite",                    // Local dev server (port 5173)
+    "build": "tsc && vite build",     // Outputs to /dist
+    "preview": "vite preview",
+    "deploy": "..."                   // Custom for Render
+  }
+}
+\end{verbatim}
+\]
+
+**Deployment to Render.com**
+
+\[
+\begin{array}{l}
+\text{1. Static Site (most common):} \\
+\quad \text{• Build command: } npm\ run\ build \\
+\quad \text{• Publish directory: } dist \\
+\quad \text{• GitHub → Auto-deploy on push} \\[0.5em]
+\text{2. Web Service (if backend):} \\
+\quad \text{• Build: } npm\ run\ build \\
+\quad \text{• Start: serve dist/}
+\end{array}
+\]
+
+**PortHub Wiring (`_auto_connect_compatible`)**
+
+\[
+\text{Vite Config Ports} \ \longleftrightarrow \ \text{React Component Ports} \ \longleftrightarrow \ \text{Render Service Ports}
+\]
+
+After `PortHub.auto_hub_files(".")`:
+
+\[
+\text{Dynamic proxy methods injected: } \quad .to\_react\text{-}component\_run(),\ .to\_render\text{-}service\_deploy(),\ \dots
+\]
+
+**Git Workflow**
+
+\[
+\begin{verbatim}
+git init
+git add .
+git commit -m "Initial Vite + React setup"
+git branch -M main
+git remote add origin <repo-url>
+git push -u origin main
+\end{verbatim}
+\]
+
+Then connect repo on Render.com for automatic CI/CD.
+
+This structure is what **PortHub** scans and turns into interconnected ports for Python-side orchestration.
