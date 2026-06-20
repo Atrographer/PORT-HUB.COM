@@ -3,6 +3,9 @@ mod_port_hub.py
 Universal Porting Hub — Generalized & Adaptive
 """
 
+import os
+import glob
+from pathlib import Path
 from typing import Dict, Any, Callable, Optional, Set, List
 import importlib
 import logging
@@ -224,9 +227,6 @@ class ModPortHub:
         Discover and register specific project files as ports.
         Perfect for Vite + React + Render stacks — works without reinstalling packages.
         """
-        import os
-        import glob
-        from pathlib import Path
 
         if extensions is None:
             extensions = [
